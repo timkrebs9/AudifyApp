@@ -1,61 +1,75 @@
-import os
-import datetime
-import jwt
-from flask import Flask, request
-from flask_mysqldb import MySQL
-from dotenv import load_dotenv
+"""Python Flask WebApp Auth0 integration example
+"""
 
-# .env-Datei laden
-load_dotenv()
+import json
+from os import environ as env
+from urllib.parse import quote_plus, urlencode
 
-server = Flask(__name__)
-mysql = MySQL(server)
+from authlib.integrations.flask_client import OAuth
+from dotenv import find_dotenv, load_dotenv
+from flask import Flask, redirect, render_template, session, url_for
 
-# Konfigurieren Sie den Server mit Umgebungsvariablen
-server.config["MYSQL_HOST"] = os.environ.get("MYSQL_HOST")
-server.config["MYSQL_USER"] = os.environ.get("MYSQL_USER")
-server.config["MYSQL_PASSWORD"] = os.environ.get("MYSQL_PASSWORD")
-server.config["MYSQL_DB"] = os.environ.get("MYSQL_DB")
-server.config["MYSQL_PORT"] = int(os.environ.get("MYSQL_PORT") or 3306)  # Standardwert auf 3306 setzen, falls nicht definiert
+ENV_FILE = find_dotenv()
+if ENV_FILE:
+    load_dotenv(ENV_FILE)
 
-@server.route("/login", methods=["POST"])
-def login():
-    auth = request.authorization
-    if not auth:
-        return "missing credentials", 401
+app = Flask(__name__)
+app.secret_key = env.get("APP_SECRET_KEY")
 
-    # check db for username and password
-    cur = mysql.connection.cursor()
-    res = cur.execute(
-        "SELECT email, password FROM user WHERE email=%s", (auth.username,)
+
+oauth = OAuth(app)
+
+oauth.register(
+    "auth0",
+    client_id=env.get("AUTH0_CLIENT_ID"),
+    client_secret=env.get("AUTH0_CLIENT_SECRET"),
+    client_kwargs={
+        "scope": "openid profile email",
+    },
+    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration',
+)
+
+
+# Controllers API
+@app.route("/")
+def home():
+    return render_template(
+        "home.html",
+        session=session.get("user"),
+        pretty=json.dumps(session.get("user"), indent=4),
     )
 
-    if res > 0:
-        user_row = cur.fetchone()
-        email = user_row[0]
-        password = user_row[1]
 
-        if auth.username != email or auth.password != password:
-            return "invalid credentials", 401
-        else:
-            return createJWT(auth.username, os.environ.get("JWT_SECRET"), True)
-    else:
-        return "invalide credentials", 401
-    
+@app.route("/callback", methods=["GET", "POST"])
+def callback():
+    token = oauth.auth0.authorize_access_token()
+    session["user"] = token
+    return redirect("/")
 
-def createJWT(username, secret, authz):
-    return jwt.encode(
-        {
-            "username": username,
-            "exp": datetime.datetime.now(tz=datetime.timezone.utc)
-            + datetime.timedelta(days=1),
-            "iat": datetime.datetime.utcnow(),
-            "admin": authz,
-        },
-        secret,
-        algorithm="HS256",
+
+@app.route("/login")
+def login():
+    return oauth.auth0.authorize_redirect(
+        redirect_uri=url_for("callback", _external=True)
+    )
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(
+        "https://"
+        + env.get("AUTH0_DOMAIN")
+        + "/v2/logout?"
+        + urlencode(
+            {
+                "returnTo": url_for("home", _external=True),
+                "client_id": env.get("AUTH0_CLIENT_ID"),
+            },
+            quote_via=quote_plus,
+        )
     )
 
 
 if __name__ == "__main__":
-    server.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=env.get("PORT", 3000))
