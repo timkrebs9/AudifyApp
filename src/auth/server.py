@@ -1,6 +1,6 @@
-import jwt
-import datetime
 import os
+import datetime
+import jwt
 from flask import Flask, request
 from flask_mysqldb import MySQL
 from dotenv import load_dotenv
