@@ -22,9 +22,9 @@ spec:
         - name: auth
           image: tim5672s/auth
           ports:
-            - containerPort: 3000
-          #envFrom:
-          #  - configMapRef:
-          #      name: auth-configmap
-          #  - secretRef:
-          #      name: auth-secret
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: auth-configmap
+            - secretRef:
+                name: auth-secret
