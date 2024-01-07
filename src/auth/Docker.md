@@ -1,4 +1,5 @@
-docker build .
+docker build -t tim5672s/gateway:latest .
 
-docker tag <YOUR_TAG_HERE> tim5672s/auth:latest
-docker push tim5672s/auth:latest
+docker login
+
+docker push tim5672s/gateway:latest
