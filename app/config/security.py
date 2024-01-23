@@ -1,16 +1,18 @@
+import base64
 import logging
+from datetime import datetime, timedelta
+
+import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-import jwt
 from passlib.context import CryptContext
-import base64
-from sqlalchemy.orm import joinedload, Session
-from datetime import datetime, timedelta
+from sqlalchemy.orm import Session, joinedload
+
 from app.config.database import get_session
 from app.config.settings import get_settings
 from app.models.user import UserToken
 
-SPECIAL_CHARACTERS = ['@', '#', '$', '%', '=', ':', '?', '.', '/', '|', '~', '>']
+SPECIAL_CHARACTERS = ["@", "#", "$", "%", "=", ":", "?", ".", "/", "|", "~", ">"]
 
 settings = get_settings()
 
@@ -46,11 +48,11 @@ def is_password_strong_enough(password: str) -> bool:
 
 
 def str_encode(string: str) -> str:
-    return base64.b85encode(string.encode('ascii')).decode('ascii')
+    return base64.b85encode(string.encode("ascii")).decode("ascii")
 
 
 def str_decode(string: str) -> str:
-    return base64.b85decode(string.encode('ascii')).decode('ascii')
+    return base64.b85decode(string.encode("ascii")).decode("ascii")
 
 
 def get_token_payload(token: str, secret: str, algo: str):
@@ -71,14 +73,20 @@ def generate_token(payload: dict, secret: str, algo: str, expiry: timedelta):
 async def get_token_user(token: str, db):
     payload = get_token_payload(token, settings.JWT_SECRET, settings.JWT_ALGORITHM)
     if payload:
-        user_token_id = str_decode(payload.get('r'))
-        user_id = str_decode(payload.get('sub'))
-        access_key = payload.get('a')
-        user_token = db.query(UserToken).options(joinedload(UserToken.user)).filter(UserToken.access_key == access_key,
-                                                 UserToken.id == user_token_id,
-                                                 UserToken.user_id == user_id,
-                                                 UserToken.expires_at > datetime.utcnow()
-                                                 ).first()
+        user_token_id = str_decode(payload.get("r"))
+        user_id = str_decode(payload.get("sub"))
+        access_key = payload.get("a")
+        user_token = (
+            db.query(UserToken)
+            .options(joinedload(UserToken.user))
+            .filter(
+                UserToken.access_key == access_key,
+                UserToken.id == user_token_id,
+                UserToken.user_id == user_id,
+                UserToken.expires_at > datetime.utcnow(),
+            )
+            .first()
+        )
         if user_token:
             return user_token.user
     return None
@@ -86,15 +94,18 @@ async def get_token_user(token: str, db):
 
 async def load_user(email: str, db):
     from app.models.user import User
+
     try:
         user = db.query(User).filter(User.email == email).first()
-    except Exception as user_exec:
+    except Exception:
         logging.info(f"User Not Found, Email: {email}")
         user = None
     return user
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_session)):
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_session)
+):
     user = await get_token_user(token=token, db=db)
     if user:
         return user

@@ -1,6 +1,6 @@
-from datetime import datetime
-import sys
 import os
+import sys
+from datetime import datetime
 from typing import Generator
 
 import pytest
@@ -10,16 +10,16 @@ from starlette.testclient import TestClient
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.main import app
-from app.config.email import fm
 from app.config.database import Base, get_session
-from app.models.user import User
+from app.config.email import fm
 from app.config.security import hash_password
+from app.main import app
+from app.models.user import User
 from app.services.user import _generate_tokens
 
-USER_NAME = "Keshari Nandan"
-USER_EMAIL = "keshari@describly.com"
-USER_PASSWORD = "123#Describly"
+USER_NAME = "Test User"
+USER_EMAIL = "support@audity.com"
+USER_PASSWORD = "123456789"
 
 engine = create_engine("sqlite:///./fastapi.db")
 SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -53,6 +53,7 @@ def client(app_test, test_session):
     fm.config.SUPPRESS_SEND = 1
     return TestClient(app_test)
 
+
 @pytest.fixture(scope="function")
 def auth_client(app_test, test_session, user):
     def _test_db():
@@ -65,7 +66,7 @@ def auth_client(app_test, test_session, user):
     fm.config.SUPPRESS_SEND = 1
     data = _generate_tokens(user, test_session)
     client = TestClient(app_test)
-    client.headers['Authorization'] = f"Bearer {data['access_token']}"
+    client.headers["Authorization"] = f"Bearer {data['access_token']}"
     return client
 
 
@@ -82,6 +83,7 @@ def inactive_user(test_session):
     test_session.refresh(model)
     return model
 
+
 @pytest.fixture(scope="function")
 def user(test_session):
     model = User()
@@ -95,6 +97,7 @@ def user(test_session):
     test_session.commit()
     test_session.refresh(model)
     return model
+
 
 @pytest.fixture(scope="function")
 def unverified_user(test_session):
