@@ -1,80 +1,64 @@
-# Backend clone  of social media app by using FastAPI
+# FastAPI Authentication APIs - Test Driven Development (TDD)
 
-#### This API  has 4 routes
+### Video Tutorial
+[Click here](#)
 
-## 1) Post route
+### APIs 
+![ALT TEXT](https://github.com/Describly/fastapi-tdd-user-authentication/blob/main/screenshot.png)
 
-#### This route is reponsible for creating post, deleting post, updating post and Checkinh post
+### Installation & Configuration
+- Install the Docker Desktop and Start It
+- Clone this repository in your local machine by typing `git@github.com:Describly/fastapi-tdd-user-authentication.git`. 
+- Open the Terminal and navigate to the project folder.
+- Run `docker volume create describly_mysql_data` to create a docker volue in you machine. Required to persist the mysql data.
+- Below will be your mysql connection details
+```bash
+MYSQL_HOST=mysql
+MYSQL_USER=root
+MYSQL_PASSWORD=Describly&123
+MYSQL_DB=fastapi
+MYSQL_PORT=3306
+```
+You do not need to change anything here, but if you would like to change the username, password or database name, you can modify it at this point in the `.env` file attached to this project. 
 
-## 2) Users route
+### Building the Project
+- We can start building our projects by running `docker-compose build`
+- One build is done, run `docker-compose up` to start the services. Leave this terminal open to check the logs.
+- To stop the services you can press `Ctrl + C` - (Control + C)
 
-#### This route is about creating users and searching user by id
+# Accessing the Docker Containers
+- FastAPI Application Status [http://localhost:8000](http://localhost:8000)
+- API Documentation [http://localhost:8000/docs](http://localhost:8000/docs)
+- Database Access [http://localhost:8080](http://localhost:8080) - use the above detail to login.
+- Mailpit [http://localhost:8025](http://localhost:8025)
 
-## 3) Auth route
+### Commands
+- To Generate the Migration From Model
+```
+docker-compose run fastapi-service /bin/sh -c "alembic revision --autogenerate -m "create my table table""
+```
+- To Apply the Migration to Database
+```
+docker-compose run fastapi-service /bin/sh -c "alembic upgrade head"
+```
+- To Revert last applied migration
+```
+docker-compose run fastapi-service /bin/sh -c "alembic downgrade -1"
+```
 
-#### This route is about login system
+- To Run the Test
+```
+docker-compose run fastapi-service /bin/sh -c "pytest"
+```
 
-## 4) Vote route
+- Display the info logs in the test
+```
+docker-compose run fastapi-service /bin/sh -c "pytest --log-cli-level=INFO"
+```
 
- #### This route is about likes or vote system and this route contain code for upvote or back vote there is not logic about down vote
+- Running a single test file
+```
+docker-compose run fastapi-service /bin/sh -c "pytest tests/test_folder/test_file.py"
+```
 
-# how to run locally
-First clone this repo by using following command
-````
-
-git clone https://github.com/Sanjeev-Thiyagarajan/fastapi-course.git
-
-````
-then 
-````
-
-cd fastapi-course
-
-````
-
-Then install fastapp using all flag like 
-
-````
-
-pip install fastapi[all]
-
-````
-
-Then go this repo folder in your local computer run follwoing command
-````
-
-uvicorn main:app --reload
-
-````
-
-Then you can use following link to use the  API
-
-````
-
-http://127.0.0.1:8000/docs 
-
-````
-
-## After run this API you need a database in postgres 
-Create a database in postgres then create a file name .env and write the following things in you file 
-
-````
-DATABASE_HOSTNAME = localhost
-DATABASE_PORT = 5432
-DATABASE_PASSWORD = passward_that_you_set
-DATABASE_NAME = name_of_database
-DATABASE_USERNAME = User_name
-SECRET_KEY = 09d25e094faa2556c818166b7a99f6f0f4c3b88e8d3e7 
-ALGORITHM = HS256
-ACCESS_TOKEN_EXPIRE_MINUTES = 60(base)
-
-````
-### Note: SECRET_KEY in this exmple is just a psudo key. You need to get a key for youself and you can get the SECRET_KEY  from fastapi documantion
- 
-
-### Here is the link of the playlist on youtube you can learn all about FASTAPI
- 
-<div id="badges">
-  <a href="https://www.youtube.com/watch?v=Yw4LmMQXXFs&list=PL8VzFQ8k4U1L5QpSapVEzoSfob-4CR8zM&index=2">
-    <img src="https://freshidea.com/jonah/youtube-api/subscribers-badge.php?label=Subscribers&style=for-the-badge&color=red&labelColor=ce4630" alt="youtube Badge"/>
-  </a>
+# fastapi-tdd-user-authentication

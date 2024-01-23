@@ -1,124 +1,110 @@
-from fastapi.testclient import TestClient
+from datetime import datetime
+import sys
+import os
+from typing import Generator
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from api.main import app
+from starlette.testclient import TestClient
 
-from api.config import settings
-from api.database import get_db
-from api.database import Base
-from api.oauth2 import create_access_token
-from api import models
-from alembic import command
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from app.main import app
+from app.config.email import fm
+from app.config.database import Base, get_session
+from app.models.user import User
+from app.config.security import hash_password
+from app.services.user import _generate_tokens
 
+USER_NAME = "Keshari Nandan"
+USER_EMAIL = "keshari@describly.com"
+USER_PASSWORD = "123#Describly"
 
-SQLALCHEMY_DATABASE_URL = f'postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}_test'
-
-
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-
-TestingSessionLocal = sessionmaker(
-    autocommit=False, autoflush=False, bind=engine)
+engine = create_engine("sqlite:///./fastapi.db")
+SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-@pytest.fixture()
-def session():
-    print("my session fixture ran")
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-    db = TestingSessionLocal()
+@pytest.fixture(scope="function")
+def test_session() -> Generator:
+    session = SessionTesting()
     try:
-        yield db
+        yield session
     finally:
-        db.close()
+        session.close()
 
 
-@pytest.fixture()
-def client(session):
-    def override_get_db():
+@pytest.fixture(scope="function")
+def app_test():
+    Base.metadata.create_all(bind=engine)
+    yield app
+    Base.metadata.drop_all(bind=engine)
 
+
+@pytest.fixture(scope="function")
+def client(app_test, test_session):
+    def _test_db():
         try:
-            yield session
+            yield test_session
         finally:
-            session.close()
-    app.dependency_overrides[get_db] = override_get_db
-    yield TestClient(app)
+            pass
 
+    app_test.dependency_overrides[get_session] = _test_db
+    fm.config.SUPPRESS_SEND = 1
+    return TestClient(app_test)
 
-@pytest.fixture
-def test_user2(client):
-    user_data = {"email": "sanjeev123@gmail.com",
-                 "password": "password123"}
-    res = client.post("/users/", json=user_data)
+@pytest.fixture(scope="function")
+def auth_client(app_test, test_session, user):
+    def _test_db():
+        try:
+            yield test_session
+        finally:
+            pass
 
-    assert res.status_code == 201
-
-    new_user = res.json()
-    new_user['password'] = user_data['password']
-    return new_user
-
-
-@pytest.fixture
-def test_user(client):
-    user_data = {"email": "sanjeev@gmail.com",
-                 "password": "password123"}
-    res = client.post("/users/", json=user_data)
-
-    assert res.status_code == 201
-
-    new_user = res.json()
-    new_user['password'] = user_data['password']
-    return new_user
-
-
-@pytest.fixture
-def token(test_user):
-    return create_access_token({"user_id": test_user['id']})
-
-
-@pytest.fixture
-def authorized_client(client, token):
-    client.headers = {
-        **client.headers,
-        "Authorization": f"Bearer {token}"
-    }
-
+    app_test.dependency_overrides[get_session] = _test_db
+    fm.config.SUPPRESS_SEND = 1
+    data = _generate_tokens(user, test_session)
+    client = TestClient(app_test)
+    client.headers['Authorization'] = f"Bearer {data['access_token']}"
     return client
 
 
-@pytest.fixture
-def test_posts(test_user, session, test_user2):
-    posts_data = [{
-        "title": "first title",
-        "content": "first content",
-        "owner_id": test_user['id']
-    }, {
-        "title": "2nd title",
-        "content": "2nd content",
-        "owner_id": test_user['id']
-    },
-        {
-        "title": "3rd title",
-        "content": "3rd content",
-        "owner_id": test_user['id']
-    }, {
-        "title": "3rd title",
-        "content": "3rd content",
-        "owner_id": test_user2['id']
-    }]
+@pytest.fixture(scope="function")
+def inactive_user(test_session):
+    model = User()
+    model.name = USER_NAME
+    model.email = USER_EMAIL
+    model.password = hash_password(USER_PASSWORD)
+    model.updated_at = datetime.utcnow()
+    model.is_active = False
+    test_session.add(model)
+    test_session.commit()
+    test_session.refresh(model)
+    return model
 
-    def create_post_model(post):
-        return models.Post(**post)
+@pytest.fixture(scope="function")
+def user(test_session):
+    model = User()
+    model.name = USER_NAME
+    model.email = USER_EMAIL
+    model.password = hash_password(USER_PASSWORD)
+    model.updated_at = datetime.utcnow()
+    model.verified_at = datetime.utcnow()
+    model.is_active = True
+    test_session.add(model)
+    test_session.commit()
+    test_session.refresh(model)
+    return model
 
-    post_map = map(create_post_model, posts_data)
-    posts = list(post_map)
-
-    session.add_all(posts)
-    # session.add_all([models.Post(title="first title", content="first content", owner_id=test_user['id']),
-    #                 models.Post(title="2nd title", content="2nd content", owner_id=test_user['id']), models.Post(title="3rd title", content="3rd content", owner_id=test_user['id'])])
-    session.commit()
-
-    posts = session.query(models.Post).all()
-    return posts
+@pytest.fixture(scope="function")
+def unverified_user(test_session):
+    model = User()
+    model.name = USER_NAME
+    model.email = USER_EMAIL
+    model.password = hash_password(USER_PASSWORD)
+    model.updated_at = datetime.utcnow()
+    model.is_active = True
+    test_session.add(model)
+    test_session.commit()
+    test_session.refresh(model)
+    return model
