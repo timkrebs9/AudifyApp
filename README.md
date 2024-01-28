@@ -1,4 +1,7 @@
-# FastAPI Demo Web App with Auth0
+# FastAPI Web App with Auth0
+
+[![CodeQL](https://github.com/timkrebs9/AudifyApp/actions/workflows/codeql.yml/badge.svg)](https://github.com/timkrebs9/AudifyApp/actions/workflows/codeql.yml)
+[![Build and deploy Python app to Azure Web App - audityapp](https://github.com/timkrebs9/AudifyApp/actions/workflows/main_audityapp.yml/badge.svg)](https://github.com/timkrebs9/AudifyApp/actions/workflows/main_audityapp.yml)
 
 This application is a small demo on how to integrate Auth0 for authentication in a FastAPI web application.
 
@@ -33,16 +36,3 @@ This application is a small demo on how to integrate Auth0 for authentication in
    ```
    
 5. Visit `http://localhost:8000`
-
-----
-
-Rewatch this live stream on FastAPI authentication with Auth0 and Jinja templates!
-
-- On [twitch](https://www.twitch.tv/videos/1990681238)
-- On [YouTube](https://www.youtube.com/watch?v=BMLaMdob3Cs)
-
-Where to find us: 
-• Jess' LinkedIn: http://linkedin.com/in/jessicatemporal/
-• Juan's LinkedIn: https://www.linkedin.com/in/bajcmartinez/
-
-Sign up for Auth0's developer newsletter here: https://a0.to/nl-signup/python
