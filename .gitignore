@@ -1,8 +1,4 @@
-## venv, settings, cache, etc
 venv
-.config
-*.pyc
-
-## IDE and editors
+.env
 .idea
-.code
+__pycache__*
