@@ -4,14 +4,32 @@ from urllib.parse import quote_plus, urlencode
 from fastapi import Depends, FastAPI, Request, HTTPException, status
 from authlib.integrations.starlette_client import OAuth
 from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from starlette.middleware.sessions import SessionMiddleware
 
 
-app = FastAPI()
-templates = Jinja2Templates(directory="templates")
 
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+def to_pretty_json(obj: dict) -> str:
+    def handle_recursive_objects(o):
+        if isinstance(o, dict):
+            return {k: handle_recursive_objects(v) for k, v in o.items()}
+        elif isinstance(o, list):
+            return [handle_recursive_objects(v) for v in o]
+        elif hasattr(o, '__dict__'):
+            return handle_recursive_objects(o.__dict__)
+        else:
+            return str(o)
+
+    return json.dumps(handle_recursive_objects(obj), indent=4)
+
+templates = Jinja2Templates(directory="templates")
+templates.env.filters['to_pretty_json'] = to_pretty_json
 
 # Read and save Auth0 Configuration
 class Settings(BaseSettings):
