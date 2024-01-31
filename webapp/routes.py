@@ -4,7 +4,9 @@ from auth.dependencies import ProtectedEndpoint
 from config import templates
 
 
-webapp_router = APIRouter()
+webapp_router = APIRouter(
+    tags=['Home']
+)
 
 
 @webapp_router.get("/")
