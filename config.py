@@ -1,3 +1,4 @@
+import os
 import configparser
 
 from fastapi import FastAPI
@@ -10,12 +11,28 @@ from utils import to_pretty_json
 
 def load_config():
     """
-    Loads configuration from .config file
+    Loads configuration from environment variables.
+    Falls back to .config file if environment variables are not set.
     """
     config = configparser.ConfigParser()
-    config.read(".config")
-    return config
 
+    if os.environ.get("AUTH0_SESSION_SECRET"):
+        # Environment variables are available
+        config['AUTH0'] = {
+            'SESSION_SECRET': os.environ.get('AUTH0_SESSION_SECRET'),
+            'DOMAIN': os.environ.get('AUTH0_DOMAIN'),
+            'CLIENT_ID': os.environ.get('AUTH0_CLIENT_ID'),
+            'CLIENT_SECRET': os.environ.get('AUTH0_CLIENT_SECRET'),
+            'AUDIENCE': os.environ.get('AUTH0_AUDIENCE')
+        }
+        config['WEBAPP'] = {
+            'SECRET_KEY': os.environ.get('WEBAPP_SECRET_KEY')
+        }
+    else:
+        # Fall back to .config file
+        config.read('.config')
+
+    return config
 
 config = load_config()
 
