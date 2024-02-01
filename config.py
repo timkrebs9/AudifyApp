@@ -1,11 +1,6 @@
 import os
 import configparser
-
-from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
-from starlette.middleware.sessions import SessionMiddleware
-
 from utils import to_pretty_json
 
 
@@ -36,7 +31,6 @@ def load_config():
 
 config = load_config()
 
-
 def configure_templates():
     """
     Creates templates from the templates folder within the webapp
@@ -47,17 +41,3 @@ def configure_templates():
 
 
 templates = configure_templates()
-
-
-def create_app():
-    """
-    Creates FastAPI app and configures it: mounts the static folder and adds session middleware
-    """
-    app = FastAPI()
-    app.mount("/static", StaticFiles(directory="static"), name="static")
-    app.add_middleware(SessionMiddleware, secret_key=config['WEBAPP']['SECRET_KEY'])
-    return app
-
-
-app = create_app()
-
