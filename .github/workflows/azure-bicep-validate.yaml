@@ -10,6 +10,8 @@ on:
 
 jobs:
   build:
+    environment: 
+      name: 'Production'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
