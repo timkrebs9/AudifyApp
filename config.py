@@ -9,68 +9,44 @@ import configparser
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
-def load_config():
+def load_secrets():
     """
     Loads configuration from Azure Key Vault or environment variables.
     Falls back to .config file if neither is set.
     """
-    config = configparser.ConfigParser()
-    key_vault_name = os.environ.get("KEY_VAULT_NAME")
+    secrets = {}
+    key_vault_name = "audifyapp-gzrvzu54wzzse"
     
     if key_vault_name:
         # Azure Key Vault is configured
-        KVUri = f"https://audifyapp-gzrvzu54wzzse.vault.azure.net"
+        KVUri = f"https://{key_vault_name}.vault.azure.net"
         credential = DefaultAzureCredential()
         client = SecretClient(vault_url=KVUri, credential=credential)
         
         # Attempt to load secrets from Azure Key Vault
         try:
-            config['AUTH0'] = {
-                'SESSION_SECRET': client.get_secret('auth0-session-secret').value,
-                'DOMAIN': client.get_secret('auth0-domain').value,
-                'CLIENT_ID': client.get_secret('auth0-client-id').value,
-                'CLIENT_SECRET': client.get_secret('auth0-client-secret').value,
-                'AUDIENCE': client.get_secret('AUTH0_AUDIENCE').value
-            }
-            config['WEBAPP'] = {
-                'SECRET_KEY': client.get_secret('webapp-secret-key').value
-            }
-
-            ###################################################
-            print(f"AUTH0 Session Secret '{client.get_secret('auth0-session-secret').value}'.")
-            print(f"AUTH0 Domain '{client.get_secret('auth0-domain').value}'.")
-            print(f"AUTH0 Client ID '{client.get_secret('auth0-client-id').value}'.")
-            print(f"AUTH0 Client Secret '{client.get_secret('auth0-client-secret').value}'.")
-            print(f"WEBAPP SECRET_KEY '{client.get_secret('webapp-secret-key').value}'.")
-            ###################################################
-
-
-
+            print("Loading secrets from Azure Key Vault...")
+            secrets['AUTH0_SESSION_SECRET'] = client.get_secret('auth0-session-secret').value
+            secrets['AUTH0_DOMAIN'] = client.get_secret('auth0-domain').value
+            secrets['AUTH0_CLIENT_ID'] = client.get_secret('auth0-client-id').value
+            secrets['AUTH0_CLIENT_SECRET'] = client.get_secret('auth0-client-secret').value
+            secrets['AUTH0_AUDIENCE'] = client.get_secret('auth0-audience').value
+            secrets['WEBAPP_SECRET_KEY'] = client.get_secret('webapp-secret-key').value
         except Exception as e:
             print(f"Error loading secrets from Azure Key Vault: {e}")
-            # Fall back to .config file or other sources as needed
     else:
-        # Environment variables or .config file fallback
-        if os.environ.get("AUTH0_SESSION_SECRET"):
-            # Load from environment variables
-            config['AUTH0'] = {
-                'SESSION_SECRET': os.environ.get('AUTH0_SESSION_SECRET'),
-                'DOMAIN': os.environ.get('AUTH0_DOMAIN'),
-                'CLIENT_ID': os.environ.get('AUTH0_CLIENT_ID'),
-                'CLIENT_SECRET': os.environ.get('AUTH0_CLIENT_SECRET'),
-                'AUDIENCE': os.environ.get('AUTH0_AUDIENCE')
-            }
-            config['WEBAPP'] = {
-                'SECRET_KEY': os.environ.get('WEBAPP_SECRET_KEY')
-            }
-        else:
-            # Load from .config file
-            config.read('.config')
 
-    return config
+        secrets['AUTH0_SESSION_SECRET'] = os.getenv('AUTH0_SESSION_SECRET')
+        secrets['AUTH0_DOMAIN'] = os.getenv('AUTH0_DOMAIN')
+        secrets['AUTH0_CLIENT_ID'] = os.getenv('AUTH0_CLIENT_ID')
+        secrets['AUTH0_CLIENT_SECRET'] = os.getenv('AUTH0_CLIENT_SECRET')
+        secrets['AUTH0_AUDIENCE'] = os.getenv('AUTH0_AUDIENCE')
+        secrets['WEBAPP_SECRET_KEY'] = os.getenv('WEBAPP_SECRET_KEY')
+    
+    return secrets
 
-# Configuration usage example
-config = load_config()
+# Use the secrets in your application
+secrets = load_secrets()
 
 
 def configure_templates():

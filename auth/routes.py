@@ -3,9 +3,10 @@ from urllib.parse import quote_plus, urlencode
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 
-from config import config
+from config import load_secrets
 from auth.config import oauth
 
+secrets = load_secrets()
 
 auth_router = APIRouter(
     tags=['Authentication']
@@ -21,7 +22,7 @@ async def login(request: Request):
         return await oauth.auth0.authorize_redirect(
             request,
             redirect_uri=request.url_for("callback"),
-            audience=config['AUTH0']['AUDIENCE']
+            audience=secrets['AUTH0_AUDIENCE']
         )
     return RedirectResponse(url=request.url_for("profile"))
 
@@ -34,7 +35,7 @@ async def signup(request: Request):
         return await oauth.auth0.authorize_redirect(
             request,
             redirect_uri=request.url_for("callback"),
-            audience=config['AUTH0']['AUDIENCE'],
+            audience=secrets['AUTH0_AUDIENCE'],
             screen_hint='signup'
         )
 
@@ -45,12 +46,12 @@ def logout(request: Request):
     Redirects the user to the Auth0 Universal Login (https://auth0.com/docs/authenticate/login/auth0-universal-login)
     """
     response = RedirectResponse(
-        url="https://" + config['AUTH0']['DOMAIN']
+        url="https://" + secrets['AUTH0_DOMAIN']
             + "/v2/logout?"
             + urlencode(
                 {
                     "returnTo": request.url_for("home"),
-                    "client_id": config['AUTH0']['CLIENT_ID'],
+                    "client_id": secrets['AUTH0_CLIENT_ID'],
                 },
                 quote_via=quote_plus,
             )
