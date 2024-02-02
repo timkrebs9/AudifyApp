@@ -9,3 +9,5 @@ httpx
 itsdangerous
 jinja2
 uvicorn
+azure-identity
+azure-keyvault-secrets
