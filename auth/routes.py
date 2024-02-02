@@ -22,7 +22,7 @@ async def login(request: Request):
         return await oauth.auth0.authorize_redirect(
             request,
             redirect_uri=request.url_for("callback"),
-            audience=secrets['AUTH0_AUDIENCE']
+            audience=""#secrets['AUTH0_AUDIENCE']
         )
     return RedirectResponse(url=request.url_for("profile"))
 
@@ -35,7 +35,7 @@ async def signup(request: Request):
         return await oauth.auth0.authorize_redirect(
             request,
             redirect_uri=request.url_for("callback"),
-            audience=secrets['AUTH0_AUDIENCE'],
+            audience="",#secrets['AUTH0_AUDIENCE'],
             screen_hint='signup'
         )
 
