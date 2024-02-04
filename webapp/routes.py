@@ -26,3 +26,13 @@ def profile(request: Request):
             "userinfo": request.session['userinfo']
         }
     )
+
+@webapp_router.get("/upload", dependencies=[Depends(ProtectedEndpoint)])
+def home(request: Request):
+
+    return templates.TemplateResponse(
+        "upload.html",
+        {
+            "request": request
+        }
+    )

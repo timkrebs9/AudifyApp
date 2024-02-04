@@ -1,11 +1,6 @@
 import os
-import configparser
-from fastapi.templating import Jinja2Templates
 from utils import to_pretty_json
-
-
-import os
-import configparser
+from fastapi.templating import Jinja2Templates
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
