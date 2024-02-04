@@ -70,4 +70,4 @@ async def callback(request: Request):
     request.session['access_token'] = token['access_token']
     request.session['id_token'] = token['id_token']
     request.session['userinfo'] = token['userinfo']
-    return RedirectResponse(url=request.url_for("profile"))
+    return RedirectResponse(url=request.url_for("home"))
