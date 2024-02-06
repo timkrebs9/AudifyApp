@@ -1,0 +1,9 @@
+az group create --name rg-audifywebapp --location eastus
+
+az acr create --resource-group rg-audifywebapp --name audifywebapp --sku Basic --admin-enabled true
+
+az acr build --resource-group rg-audifywebapp --registry audifywebapp --image audifywebapp:latest .
+
+az appservice plan create --name webplan --resource-group rg-audifywebapp --sku B1 --is-linux
+
+az webapp create --resource-group rg-audifywebapp --plan webplan --name audifywebapp --docker-registry-server-password YvyNm1Y5IQgOmxEobkkpUlzxlrMIZGIp3LajKRQVuV+ACRCkTChr --docker-registry-server-user audifywebapp --role acrpull --deployment-container-image-name audifywebapp.azurecr.io/audifywebapp:latest 
