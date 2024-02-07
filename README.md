@@ -12,6 +12,7 @@ products:
 # Deploy a Python (FastAPI) web app to Azure App Service
 ![Python](https://img.shields.io/badge/python-3.9+-blue)
 [![pre-commit](https://github.com/timkrebs9/AudifyApp/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/timkrebs9/AudifyApp/actions/workflows/pre-commit.yml)
+[![CodeQL](https://github.com/timkrebs9/AudifyApp/actions/workflows/codeql.yml/badge.svg)](https://github.com/timkrebs9/AudifyApp/actions/workflows/codeql.yml)
 [![Build and deploy](https://github.com/timkrebs9/AudifyApp/actions/workflows/main_audifywebapp.yml/badge.svg)](https://github.com/timkrebs9/AudifyApp/actions/workflows/main_audifywebapp.yml)
 
 
