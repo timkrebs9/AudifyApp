@@ -94,7 +94,7 @@ az webapp update --name audifywebapp --resource-group rg-audifywebapp --docker-r
 We welcome contributions! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to submit contributions to this project.
 
 ## Issues
-If you encounter any issues or have feature suggestions, please file them in the [issues section](https://github.com/timkrebs9/AudifyApp/issues) of this repository.
+If you encounter any issues or have feature suggestions, please file them in the [ISSUE](.github/ISSUE_TEMPLATE.md) of this repository.
 
 ## Changelog
 See the [CHANGELOG.md](CHANGELOG.md) for details on changes and updates made to the project.
