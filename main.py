@@ -30,7 +30,9 @@ async def favicon() -> FileResponse:
     )
 
 
-@app.post("/hello", response_class=HTMLResponse)
+@app.post(
+    "/hello", response_class=HTMLResponse, response_model=None
+)  # Hinzugefügtes response_model=None
 async def hello(
     request: Request, name: str = Form(...)
 ) -> HTMLResponse | RedirectResponse:
@@ -40,11 +42,9 @@ async def hello(
             "hello.html", {"request": request, "name": name}
         )
 
-    # Direkt fortsetzen, da 'return' im 'if'-Block das Ende der
-    # Ausführung markiert
     print(
-        "Request for hello page received with no name or \
-            blank name -- redirecting"
+        "Request for hello page received with no name or blank name -- \
+            redirecting"
     )
     return RedirectResponse(
         request.url_for("index"), status_code=status.HTTP_302_FOUND
