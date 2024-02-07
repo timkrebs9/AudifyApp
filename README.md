@@ -1,5 +1,5 @@
 ---
-name: Audify
+name: audify
 description: "A minimal sample app that uses Auth0, FastApi and Azure App Services"
 languages:
 - python
