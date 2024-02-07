@@ -10,6 +10,10 @@ products:
 ---
 
 # Deploy a Python (FastAPI) web app to Azure App Service
+![Python](https://img.shields.io/badge/python-3.9+-blue)
+[![Build and deploy](https://github.com/timkrebs9/AudifyApp/actions/workflows/main_audifywebapp.yml/badge.svg)](https://github.com/timkrebs9/AudifyApp/actions/workflows/main_audifywebapp.yml)
+
+
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://codespaces.new/timkrebs9/AudifyApp)
 [![Open in Dev Container](https://img.shields.io/static/v1?style=for-the-badge&label=Dev+Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/timkrebs9/AudifyApp)
 
