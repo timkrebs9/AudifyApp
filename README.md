@@ -1,14 +1,18 @@
 ---
-page_type: sample
-description: "A minimal sample app that can be used to demonstrate deploying FastAPI apps to Azure App Service."
+page_type: Application
+description: "A minimal sample app that can be used to demonstrate deploying FastAPI apps to Azure App Service with Auth0 authentication."
 languages:
 - python
 products:
 - azure
 - azure-app-service
+- auth0
 ---
 
-# Deploy a Python (FastAPI) web app to Azure App Service - Sample Application
+# Deploy a Python (FastAPI) web app to Azure App Service
+[![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://codespaces.new/timkrebs9/AudifyApp)
+[![Open in Dev Container](https://img.shields.io/static/v1?style=for-the-badge&label=Dev+Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/timkrebs9/AudifyApp)
+
 
 This is the sample FastAPI application for the Azure Quickstart [Deploy a Python (Django, Flask or FastAPI) web app to Azure App Service](https://docs.microsoft.com/en-us/azure/app-service/quickstart-python). For instructions on how to create the Azure resources and deploy the application to Azure, refer to the Quickstart article.
 
