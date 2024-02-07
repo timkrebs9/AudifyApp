@@ -28,7 +28,7 @@ jobs:
       with:
         push: true
         tags: audifywebapp.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_b33d90c3940b4681a5dd9198b04290b3 }}/audifywebapp:${{ github.sha }}
-        file: ./Dockerfile
+        file: ./app/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
