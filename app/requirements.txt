@@ -1,0 +1,6 @@
+# Runtime requirements
+fastapi
+uvicorn
+gunicorn
+jinja2
+python-multipart
