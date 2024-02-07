@@ -11,8 +11,8 @@ from fastapi.templating import Jinja2Templates
 
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+templates = Jinja2Templates(directory="app/templates")
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -24,7 +24,7 @@ async def index(request: Request) -> HTMLResponse:
 @app.get("/favicon.ico")
 async def favicon() -> FileResponse:
     file_name = "favicon.ico"
-    file_path = "./static/" + file_name
+    file_path = "./app/static/" + file_name
     return FileResponse(
         path=file_path, headers={"mimetype": "image/vnd.microsoft.icon"}
     )
