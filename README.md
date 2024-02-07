@@ -6,7 +6,7 @@ languages:
 - javascript
 - html
 - css
--azurecli
+- azurecli
 products:
 - azure
 - azure-app-service
