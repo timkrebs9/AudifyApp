@@ -10,7 +10,6 @@ from fastapi.responses import RedirectResponse
 from starlette.responses import Response
 
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
