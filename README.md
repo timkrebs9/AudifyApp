@@ -26,42 +26,96 @@ This is the sample FastAPI application for deploying FastAPI apps to Azure App S
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://codespaces.new/timkrebs9/AudifyApp)
 [![Open in Dev Container](https://img.shields.io/static/v1?style=for-the-badge&label=Dev+Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/timkrebs9/AudifyApp)
 
+## Project structure
+
+To create an effective project structure for your FastAPI project "AudifyApp" that can be displayed in the README file, I recommend the following structure. This structure is based on best practices for organizing FastAPI projects and can help improve the readability, maintainability, and scalability of your project. Note that this structure should be adapted to your specific requirements:
+
+# AudifyApp Project Structure
+```
+AudifyApp/
+│
+├── app/                      # Main application folder
+│   ├── api/                  # Endpoints and API-specific logic
+│   │   ├── dependencies/     # Dependencies for the API routes
+│   │   ├── routers/          # Files for individual routes
+│   │   └── responses.py      # Custom response models
+│   │
+│   ├── core/                 # Core configurations and settings
+│   │   ├── config.py         # Configuration file for the project
+│   │   └── security.py       # Security settings, e.g., for authentication
+│   │
+│   ├── models/               # Database models
+│   │   └── models.py         # SQLAlchemy models
+│   │
+│   ├── schemas/              # Pydantic schemas for request and response
+│   │   └── schemas.py        # Definition of schemas
+│   │
+│   ├── services/             # Business logic and services
+│   │   └── service.py        # Service classes and functions
+│   │
+│   └── main.py               # FastAPI application instance and router imports
+│
+├── tests/                    # Test folder
+│   └── test_api.py           # Test cases for the API
+│
+├── .env                      # Environment variables and configurations
+├── .gitignore                # Gitignore file
+├── Dockerfile                # Dockerfile for containerization
+├── requirements.txt          # Project dependencies
+└── README.md                 # README file with project overview and instructions
+```
+
+- **app/api**: Contains your route definitions and API-specific logic. Routers organize endpoints into logical groups.
+- **app/core**: Includes core configuration files like the application configuration and security settings.
+- **app/models**: Defines your database models using SQLAlchemy for ORM (Object-Relational Mapping).
+- **app/schemas**: Contains Pydantic models for data validation and serialization of requests and responses.
+- **app/services**: Houses the business logic of your application, separated from the API logic for improved reusability and maintainability.
+- **tests**: Contains your test cases, promoting a test-driven development (TDD) approach.
+
 ## Local Testing
 
 ### Install the requirements
+
 ```bash
 pip install -r requirements-dev.txt
 ```
 
 ### Install the pre-commit check
+
 ```bash
 pre-commit install
 ```
 
 ### Start the application
+
 ```bash
 uvicorn main:app --reload
 ```
 
 ### Example call
+
 Open http://127.0.0.1:8000/ in your browser to access the app locally.
 
 ## Build and Run the Image Locally
 
 ### Build the image
+
 ```bash
 docker build --tag audifywebapp .
 ```
 
 ### Run the image in a Docker container
+
 ```bash
 docker run --detach --publish 3100:3100 audifywebapp
 ```
+
 Open http://localhost:3100 in your browser to see the web app running locally.
 
 ## Deployment to Azure
 
 ### Login into Azure Account
+
 ```bash
 az login
 ```
