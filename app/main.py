@@ -24,15 +24,13 @@ async def index(request: Request) -> HTMLResponse:
 @app.get("/favicon.ico")
 async def favicon() -> FileResponse:
     file_name = "favicon.ico"
-    file_path = "./app/static/" + file_name
+    file_path = "./static/" + file_name
     return FileResponse(
         path=file_path, headers={"mimetype": "image/vnd.microsoft.icon"}
     )
 
 
-@app.post(
-    "/hello", response_class=HTMLResponse, response_model=None
-)  # Hinzugefügtes response_model=None
+@app.post("/hello", response_class=HTMLResponse, response_model=None)
 async def hello(
     request: Request, name: str = Form(...)
 ) -> HTMLResponse | RedirectResponse:
