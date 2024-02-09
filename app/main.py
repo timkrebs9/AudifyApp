@@ -1,4 +1,5 @@
 import uvicorn
+from app.auth.routes import auth_router
 from fastapi import FastAPI
 from fastapi import Form
 from fastapi import Request
@@ -13,6 +14,8 @@ from fastapi.templating import Jinja2Templates
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+
+app.include_router(auth_router)
 
 
 @app.get("/", response_class=HTMLResponse)
