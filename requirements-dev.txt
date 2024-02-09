@@ -1,9 +1,14 @@
 # Runtime requirements
-fastapi
+Authlib
+fastapi[all]
 uvicorn
 gunicorn
+httpx
+itsdangerous
 jinja2
 python-multipart
+azure-identity
+azure-keyvault-secrets
 
 # Linting/Tooling
 black>=23.11.0
