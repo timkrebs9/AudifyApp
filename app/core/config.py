@@ -4,7 +4,11 @@ from app.services.utils import to_pretty_json
 from azure.core.exceptions import HttpResponseError
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
+from dotenv import load_dotenv
 from fastapi.templating import Jinja2Templates
+
+
+load_dotenv()
 
 
 def load_secrets() -> dict[str, str]:
