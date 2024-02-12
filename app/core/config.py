@@ -1,11 +1,10 @@
 import os
 
 from app.services.utils import to_pretty_json
+from azure.core.exceptions import HttpResponseError
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 from fastapi.templating import Jinja2Templates
-
-
 
 
 def load_secrets() -> dict[str, str]:
@@ -37,8 +36,8 @@ def load_secrets() -> dict[str, str]:
                 "webapp-secret-key"
             ).value
             print("Successfully loaded secrets from Azure Key Vault.")
-        except Exception:
-            print("Error loading secrets from Azure Key Vault")
+        except HttpResponseError as e:  # Catch specific exceptions
+            print(f"Error loading secrets from Azure Key Vault: {e.message}")
     else:
         print("Loading secrets from environment variables.")
         secrets["AUTH0_SESSION_SECRET"] = os.getenv("AUTH0_SESSION_SECRET")
