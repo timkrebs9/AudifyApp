@@ -29,9 +29,6 @@ def load_secrets() -> dict[str, str]:
             secrets["AUTH0_CLIENT_SECRET"] = client.get_secret(
                 "auth0-client-secret"
             ).value
-            secrets["AUTH0_AUDIENCE"] = client.get_secret(
-                "auth0-audience"
-            ).value
             secrets["WEBAPP_SECRET_KEY"] = client.get_secret(
                 "webapp-secret-key"
             ).value
@@ -50,14 +47,11 @@ def load_secrets() -> dict[str, str]:
     return secrets
 
 
-secrets = load_secrets()
-
-
 def configure_templates() -> Jinja2Templates:
     """
     Creates templates from the templates folder within the webapp
     """
-    templates = Jinja2Templates(directory="app/templates")
+    templates = Jinja2Templates(directory="app/webapp/templates")
     templates.env.filters["to_pretty_json"] = to_pretty_json
     return templates
 
