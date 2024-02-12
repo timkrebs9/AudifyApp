@@ -1,5 +1,3 @@
-import logging
-import logging.config
 import os
 
 from app.services.utils import to_pretty_json
@@ -8,8 +6,6 @@ from azure.keyvault.secrets import SecretClient
 from fastapi.templating import Jinja2Templates
 
 
-logging.config.fileConfig("app/etc/logging.conf")
-logger = logging.getLogger("azure_secrets_loader")
 
 
 def load_secrets() -> dict[str, str]:
@@ -17,9 +13,7 @@ def load_secrets() -> dict[str, str]:
     key_vault_name = "audifywebapp"
 
     if key_vault_name:
-        logger.info(
-            "Azure Key Vault is configured. Attempting to load secrets."
-        )
+        print("Azure Key Vault is configured. Attempting to load secrets.")
         kv_uri = f"https://{key_vault_name}.vault.azure.net"
         credential = DefaultAzureCredential()
         client = SecretClient(vault_url=kv_uri, credential=credential)
@@ -42,11 +36,11 @@ def load_secrets() -> dict[str, str]:
             secrets["WEBAPP_SECRET_KEY"] = client.get_secret(
                 "webapp-secret-key"
             ).value
-            logger.info("Successfully loaded secrets from Azure Key Vault.")
+            print("Successfully loaded secrets from Azure Key Vault.")
         except Exception:
-            logger.exception("Error loading secrets from Azure Key Vault")
+            print("Error loading secrets from Azure Key Vault")
     else:
-        logger.info("Loading secrets from environment variables.")
+        print("Loading secrets from environment variables.")
         secrets["AUTH0_SESSION_SECRET"] = os.getenv("AUTH0_SESSION_SECRET")
         secrets["AUTH0_DOMAIN"] = os.getenv("AUTH0_DOMAIN")
         secrets["AUTH0_CLIENT_ID"] = os.getenv("AUTH0_CLIENT_ID")
@@ -64,7 +58,7 @@ def configure_templates() -> Jinja2Templates:
     """
     Creates templates from the templates folder within the webapp
     """
-    templates = Jinja2Templates(directory="webapp/templates")
+    templates = Jinja2Templates(directory="app/templates")
     templates.env.filters["to_pretty_json"] = to_pretty_json
     return templates
 
