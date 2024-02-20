@@ -1,15 +1,29 @@
-# syntax=docker/dockerfile:1
+FROM python:3.11.8
+WORKDIR /usr/src/app
+COPY .env ./.env
+COPY requirements.txt ./
 
-FROM python:3.11
+ARG DATABASE_HOSTNAME
+ARG DATABASE_PORT
+ARG DATABASE_PASSWORD
+ARG DATABASE_NAME
+ARG DATABASE_USERNAME
+ARG SECRET_KEY
+ARG ALGORITHM
+ARG ACCESS_TOKEN_EXPIRE_MINUTES
+ENV DATABASE_HOSTNAME=${DATABASE_HOSTNAME}
+ENV DATABASE_PORT=5432
+ENV DATABASE_PASSWORD=${DATABASE_PASSWORD}
+ENV DATABASE_NAME=${DATABASE_NAME}
+ENV DATABASE_USERNAME=${DATABASE_USERNAME}
+ENV SECRET_KEY=${SECRET_KEY}
+ENV ALGORITHM=${ALGORITHM}
+ENV ACCESS_TOKEN_EXPIRE_MINUTES=30
 
-WORKDIR /code
-
-COPY requirements.txt .
-
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
 EXPOSE 3100
 
-CMD ["gunicorn", "app.main:app"]
+CMD ["gunicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

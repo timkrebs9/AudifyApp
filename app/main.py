@@ -1,31 +1,30 @@
-import uvicorn
-from app.auth.routes import auth_router
-from app.core.config import secrets
-from app.core.config import templates
-from app.webapp.routes import webapp_router
 from fastapi import FastAPI
-from fastapi import Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from starlette.middleware.sessions import SessionMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+
+from .routers import auth
+from .routers import post
+from .routers import user
+from .routers import vote
 
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-app.add_middleware(SessionMiddleware, secret_key=secrets["WEBAPP_SECRET_KEY"])
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(post.router)
+app.include_router(user.router)
+app.include_router(auth.router)
+app.include_router(vote.router)
 
 
-app.include_router(webapp_router)
-app.include_router(auth_router)
-
-
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request) -> HTMLResponse:
-    print("Request for index page received")
-    return templates.TemplateResponse("home.html", {"request": request})
-
-
-if __name__ == "__main__":
-    uvicorn.run(
-        "main:app", host="0.0.0.0", port=8000, proxy_headers=True, reload=True
-    )
+@app.get("/")
+def root() -> dict[str, str]:
+    return {"message": "Hello World pushing out to ubuntu"}
